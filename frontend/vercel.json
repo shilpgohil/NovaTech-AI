@@ -50,6 +50,6 @@
     }
   ],
   "env": {
-    "REACT_APP_API_URL": "https://your-backend-url.railway.app"
+    "REACT_APP_API_URL": "https://novatech-ai-ju24.onrender.com"
   }
 } 

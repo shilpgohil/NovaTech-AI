@@ -94,8 +94,10 @@ origins = [
     "http://localhost:3000",
     "http://localhost:3001", 
     "http://localhost:3002",
-    # Production - Add your Vercel domain here after deployment
-    # Example: "https://your-app-name.vercel.app"
+            # Production - Add your Vercel domain here after deployment
+        # Example: "https://your-app-name.vercel.app"
+        # Note: Update this after deploying to Vercel
+        "https://nova-tech-ai-iota.vercel.app",  # Your Vercel frontend
     # Allow all origins in development (remove in production)
     "*"
 ]

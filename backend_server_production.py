@@ -30,19 +30,34 @@ user_learning = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lazy load AI components only when needed"""
-    global langchain_gemini, simple_gemini, knowledge_manager, dynamic_apis, user_learning
-    
+    """Lifespan context manager for lazy loading AI components"""
     logger.info("🚀 Starting NovaTech AI Backend Server...")
     
-    # Initialize core components
+    # Initialize global variables
+    global langchain_gemini, simple_gemini, knowledge_manager, dynamic_apis, user_learning
+    
     try:
+        logger.info("📦 Loading AI components...")
+        
         # Import and initialize AI components only when needed
-        from src.integrations.langchain_gemini import LangChainGeminiClient
-        from src.integrations.simple_gemini import GeminiClient
-        from src.utils.dynamic_knowledge_manager import DynamicKnowledgeManager
-        from src.utils.dynamic_apis import DynamicAPIManager
-        from src.utils.user_learning import UserLearningSystem
+        try:
+            from src.integrations.langchain_gemini import LangChainGeminiClient
+            from src.integrations.simple_gemini import GeminiClient
+            from src.utils.dynamic_knowledge_manager import DynamicKnowledgeManager
+            from src.utils.dynamic_apis import DynamicAPIManager
+            from src.utils.user_learning import UserLearningSystem
+            logger.info("✅ All imports successful")
+        except ImportError as e:
+            logger.error(f"❌ Import failed: {e}")
+            # Set all to None if imports fail
+            langchain_gemini = None
+            simple_gemini = None
+            knowledge_manager = None
+            dynamic_apis = None
+            user_learning = None
+            logger.warning("⚠️ Continuing without AI components")
+            yield
+            return
         
         # Initialize with error handling
         if os.getenv("GOOGLE_API_KEY"):
@@ -51,12 +66,18 @@ async def lifespan(app: FastAPI):
                 logger.info("✅ LangChain Gemini initialized")
             except Exception as e:
                 logger.warning(f"⚠️ LangChain Gemini failed: {e}")
+                langchain_gemini = None
             
             try:
                 simple_gemini = GeminiClient()
                 logger.info("✅ Simple Gemini initialized")
             except Exception as e:
                 logger.warning(f"⚠️ Simple Gemini failed: {e}")
+                simple_gemini = None
+        else:
+            logger.warning("⚠️ No GOOGLE_API_KEY found, skipping Gemini initialization")
+            langchain_gemini = None
+            simple_gemini = None
         
         # Initialize knowledge manager
         try:
@@ -64,17 +85,31 @@ async def lifespan(app: FastAPI):
             logger.info("✅ Knowledge manager initialized")
         except Exception as e:
             logger.warning(f"⚠️ Knowledge manager failed: {e}")
+            knowledge_manager = None
         
         # Initialize other components
         try:
             dynamic_apis = DynamicAPIManager()
-            user_learning = UserLearningSystem()
-            logger.info("✅ Additional components initialized")
+            logger.info("✅ Dynamic APIs initialized")
         except Exception as e:
-            logger.warning(f"⚠️ Some components failed: {e}")
+            logger.warning(f"⚠️ Dynamic APIs failed: {e}")
+            dynamic_apis = None
             
-    except ImportError as e:
-        logger.warning(f"⚠️ Some AI components not available: {e}")
+        try:
+            user_learning = UserLearningSystem()
+            logger.info("✅ User learning initialized")
+        except Exception as e:
+            logger.warning(f"⚠️ User learning failed: {e}")
+            user_learning = None
+            
+    except Exception as e:
+        logger.error(f"❌ Critical error during startup: {e}")
+        # Set all to None on critical failure
+        langchain_gemini = None
+        simple_gemini = None
+        knowledge_manager = None
+        dynamic_apis = None
+        user_learning = None
     
     logger.info("🎯 Backend ready - AI components loaded on-demand")
     yield
@@ -130,19 +165,29 @@ class ChatResponse(BaseModel):
 @app.get("/health")
 async def health_check():
     """Health check endpoint for deployment monitoring"""
-    return {
-        "status": "healthy",
-        "service": "NovaTech AI Backend",
-        "version": "2.0.0",
-        "ai_components": {
-            "langchain_gemini": langchain_gemini is not None,
-            "simple_gemini": simple_gemini is not None,
-            "knowledge_manager": knowledge_manager is not None,
-            "dynamic_apis": dynamic_apis is not None,
-            "user_learning": user_learning is not None
-        },
-        "timestamp": "2025-08-29T00:00:00Z"
-    }
+    try:
+        return {
+            "status": "healthy",
+            "service": "NovaTech AI Backend",
+            "version": "2.0.0",
+            "ai_components": {
+                "langchain_gemini": langchain_gemini is not None,
+                "simple_gemini": simple_gemini is not None,
+                "knowledge_manager": knowledge_manager is not None,
+                "dynamic_apis": dynamic_apis is not None,
+                "user_learning": user_learning is not None
+            },
+            "timestamp": "2025-08-29T00:00:00Z"
+        }
+    except Exception as e:
+        logger.error(f"Health check error: {e}")
+        return {
+            "status": "degraded",
+            "service": "NovaTech AI Backend",
+            "version": "2.0.0",
+            "error": str(e),
+            "timestamp": "2025-08-29T00:00:00Z"
+        }
 
 # Main chat endpoint
 @app.post("/api/chat", response_model=ChatResponse)

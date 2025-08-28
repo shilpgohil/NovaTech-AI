@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "last_updated": "2025-08-26T12:00:00",
+  "faq_entries": [],
+  "learning_stats": {
+    "total_queries": 0,
+    "successful_responses": 0,
+    "patterns_identified": 0,
+    "faq_entries_generated": 0
+  },
+  "description": "Dynamic user learning data including FAQ entries generated from user interactions and learning patterns"
+}

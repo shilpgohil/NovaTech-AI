@@ -1,0 +1,167 @@
+{
+  "marketing_assets": {
+    "website_sections": [
+      "Blog",
+      "Case Studies", 
+      "Testimonials",
+      "Pricing",
+      "Webinars",
+      "Documentation",
+      "Support"
+    ],
+    "social_media": {
+      "linkedin": "NovaTech-Solutions",
+      "twitter": "@NovaTechAI",
+      "youtube": "NovaTech Tutorials",
+      "facebook": "NovaTech Solutions"
+    },
+    "content_types": [
+      "Product walkthroughs",
+      "Webinar recordings",
+      "Case studies",
+      "Blog posts",
+      "Tutorial videos",
+      "Whitepapers"
+    ]
+  },
+  "webinars": [
+    {
+      "title": "Getting Started with NovaDesk",
+      "description": "Learn how to set up and configure NovaDesk for your IT support team",
+      "frequency": "Monthly",
+      "duration": "45 minutes",
+      "target_audience": "IT managers, Support teams"
+    },
+    {
+      "title": "Data-Driven Insights with NovaAnalytics",
+      "description": "Discover how to leverage NovaAnalytics for business intelligence and reporting",
+      "frequency": "Monthly",
+      "duration": "60 minutes",
+      "target_audience": "Business analysts, Data teams"
+    },
+    {
+      "title": "Optimizing Sales with NovaCRM",
+      "description": "Best practices for lead management and sales pipeline optimization",
+      "frequency": "Bi-monthly",
+      "duration": "45 minutes",
+      "target_audience": "Sales managers, Marketing teams"
+    },
+    {
+      "title": "HR Automation with NovaHR",
+      "description": "Streamline your HR processes with NovaHR automation features",
+      "frequency": "Quarterly",
+      "duration": "60 minutes",
+      "target_audience": "HR managers, Operations teams"
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "Retail Chain Boosts Conversion by 40% Using NovaCRM",
+      "company": "Metro Retail Chain",
+      "industry": "Retail",
+      "challenge": "Low conversion rates, manual lead tracking",
+      "solution": "Implemented NovaCRM with analytics",
+      "results": "40% increase in conversion rates, 60% faster lead processing",
+      "products_used": ["NovaCRM", "NovaAnalytics"]
+    },
+    {
+      "title": "IT Agency Reduces Ticket Resolution Time by 35% with NovaDesk",
+      "company": "TechSupport Pro",
+      "industry": "IT Services",
+      "challenge": "Slow manual support, poor ticket tracking",
+      "solution": "Deployed NovaDesk with AI automation",
+      "results": "35% faster ticket resolution, 50% reduction in support costs",
+      "products_used": ["NovaDesk"]
+    },
+    {
+      "title": "Manufacturing Firm Achieves 25% Cost Savings with NovaHR",
+      "company": "Precision Manufacturing",
+      "industry": "Manufacturing",
+      "challenge": "Manual payroll processing, compliance issues",
+      "solution": "Implemented NovaHR with compliance features",
+      "results": "25% cost savings, 100% compliance accuracy",
+      "products_used": ["NovaHR"]
+    }
+  ],
+  "whitepapers": [
+    {
+      "title": "Future of SaaS in Indian SMB Sector",
+      "description": "Comprehensive analysis of SaaS adoption trends in Indian small and medium businesses",
+      "topics": ["Market trends", "Adoption challenges", "ROI analysis", "Implementation strategies"],
+      "target_audience": "Business leaders, IT decision makers"
+    },
+    {
+      "title": "Leveraging ML for Sales Forecasting",
+      "description": "How machine learning is transforming sales forecasting and pipeline management",
+      "topics": ["ML algorithms", "Data preparation", "Forecasting accuracy", "Implementation guide"],
+      "target_audience": "Sales managers, Data scientists"
+    },
+    {
+      "title": "Driving SMB Growth with Integrated SaaS Platforms",
+      "description": "Case studies and strategies for SMB growth using integrated SaaS solutions",
+      "topics": ["Integration strategies", "Growth metrics", "Success stories", "Best practices"],
+      "target_audience": "SMB owners, Growth managers"
+    }
+  ],
+  "brand_guidelines": {
+    "logo": {
+      "primary": "NovaTech logo with blue gradient",
+      "variants": ["Full color", "Monochrome", "White on dark", "Dark on light"]
+    },
+    "color_palette": {
+      "primary_blue": "#2563eb",
+      "secondary_gray": "#64748b",
+      "accent_green": "#10b981",
+      "warning_orange": "#f59e0b",
+      "error_red": "#ef4444"
+    },
+    "typography": {
+      "primary_font": "Inter",
+      "secondary_font": "Roboto",
+      "headings": "Inter Bold",
+      "body_text": "Inter Regular"
+    },
+    "tone_of_voice": [
+      "Professional yet approachable",
+      "Innovation-focused",
+      "Customer-centric",
+      "Data-driven",
+      "Trustworthy"
+    ]
+  },
+  "marketing_campaigns": [
+    {
+      "name": "Q1 2024 Brand Awareness",
+      "target_audience": "Tech professionals, Business leaders",
+      "channels": ["LinkedIn", "Email", "Webinars"],
+      "status": "Active",
+      "start_date": "2024-01-01",
+      "end_date": "2024-03-31",
+      "key_messages": [
+        "AI-powered solutions for businesses",
+        "Expert team with proven track record",
+        "Innovative approach to problem-solving"
+      ]
+    },
+    {
+      "name": "Product Launch: NovaAnalytics 2.0",
+      "target_audience": "Business analysts, Data teams",
+      "channels": ["Webinars", "Email", "Social media"],
+      "status": "Planned",
+      "start_date": "2024-04-01",
+      "end_date": "2024-06-30",
+      "key_messages": [
+        "Enhanced ML capabilities",
+        "Improved dashboard performance",
+        "New predictive analytics features"
+      ]
+    }
+  ],
+  "content_calendar": {
+    "blog_posts": "2-3 per week",
+    "webinars": "Monthly",
+    "case_studies": "Bi-monthly",
+    "whitepapers": "Quarterly",
+    "social_media": "Daily posts across platforms"
+  }
+} 

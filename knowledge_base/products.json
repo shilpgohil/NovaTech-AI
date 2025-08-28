@@ -1,0 +1,103 @@
+{
+  "products": [
+    {
+      "name": "NovaCRM",
+      "description": "Cloud CRM for managing leads, pipelines, and email campaigns",
+      "target_market": "Sales & marketing teams",
+      "pricing": {
+        "monthly_per_user": "₹2,499",
+        "monthly_usd": "$29",
+        "annual_discount": "15%",
+        "free_trial": "14 days"
+      },
+      "features": [
+        "Lead management",
+        "Pipeline tracking",
+        "Email campaigns",
+        "Sales analytics",
+        "Contact management",
+        "Deal tracking"
+      ],
+      "integrations": ["Salesforce", "Zapier", "Google Workspace", "Microsoft Teams"],
+      "use_cases": ["Sales teams", "Marketing teams", "Small businesses", "Mid-market companies"]
+    },
+    {
+      "name": "NovaHR",
+      "description": "HR & payroll automation, leave tracking",
+      "target_market": "HR departments",
+      "pricing": {
+        "monthly_per_user": "₹4,199",
+        "monthly_usd": "$49",
+        "annual_discount": "15%",
+        "free_trial": "14 days"
+      },
+      "features": [
+        "Payroll automation",
+        "Leave tracking",
+        "Employee onboarding",
+        "Performance management",
+        "Compliance reporting",
+        "Benefits administration"
+      ],
+      "integrations": ["Workday", "HRUnity", "Zapier", "Google Workspace"],
+      "use_cases": ["HR departments", "Companies with 50+ employees", "Multi-location businesses"]
+    },
+    {
+      "name": "NovaDesk",
+      "description": "AI-ticketing helpdesk with knowledge base",
+      "target_market": "IT support teams",
+      "pricing": {
+        "monthly_per_user": "₹3,299",
+        "monthly_usd": "$39",
+        "annual_discount": "15%",
+        "free_trial": "14 days"
+      },
+      "features": [
+        "AI-powered ticketing",
+        "Knowledge base",
+        "Automated responses",
+        "Ticket routing",
+        "SLA management",
+        "Reporting & analytics"
+      ],
+      "integrations": ["Slack", "Microsoft Teams", "Zapier", "Email systems"],
+      "use_cases": ["IT support", "Customer service", "Technical teams", "Helpdesk operations"]
+    },
+    {
+      "name": "NovaAnalytics",
+      "description": "BI dashboards with smart alerts powered by ML",
+      "target_market": "Business analysts",
+      "pricing": {
+        "monthly_per_user": "₹4,999",
+        "monthly_usd": "$59",
+        "annual_discount": "15%",
+        "free_trial": "14 days"
+      },
+      "features": [
+        "Interactive dashboards",
+        "Smart alerts",
+        "ML-powered insights",
+        "Data visualization",
+        "Custom reports",
+        "Real-time analytics"
+      ],
+      "integrations": ["Salesforce", "NovaCRM", "NovaHR", "NovaDesk", "External databases"],
+      "use_cases": ["Business intelligence", "Data analysis", "Executive reporting", "Performance monitoring"]
+    }
+  ],
+  "pricing_policies": {
+    "annual_discount": "15% off monthly pricing",
+    "enterprise_pricing": "Custom pricing for 500+ users",
+    "volume_discounts": "Available for 50+ users",
+    "refund_policy": "30-day money-back guarantee",
+    "billing_cycle": "Monthly or annual",
+    "payment_methods": ["Credit card", "Bank transfer", "Invoice"]
+  },
+  "technology_stack": {
+    "backend": ["Python (Django/FastAPI)", "PostgreSQL", "Redis", "Kafka"],
+    "frontend": ["React.js", "Material-UI"],
+    "ai_ml": ["Proprietary recommendation engine", "TensorFlow-based"],
+    "deployment": ["AWS Mumbai region", "DR in Singapore"],
+    "security": ["ISO 27001", "SOC2 Type II", "GDPR ready"]
+  }
+} 

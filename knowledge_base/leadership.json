@@ -1,0 +1,90 @@
+{
+  "leadership": {
+    "ceo": {
+      "name": "Priya Menon",
+      "title": "CEO & Co-founder",
+      "responsibilities": ["Vision & strategic growth", "Company direction", "Investor relations"],
+      "background": "Former VP at TechCorp, 15+ years in SaaS leadership",
+      "email": "priya.menon@novatech.com"
+    },
+    "cto": {
+      "name": "Rajesh Gupta",
+      "title": "CTO & Co-founder",
+      "responsibilities": ["Product and engineering oversight", "Technology strategy", "AI/ML initiatives"],
+      "background": "Ex-Google engineer, PhD in Computer Science",
+      "email": "rajesh.gupta@novatech.com"
+    },
+    "coo": {
+      "name": "Kavita Sharma",
+      "title": "COO",
+      "responsibilities": ["Operations", "HR", "Legal", "Finance"],
+      "background": "Former COO at StartupXYZ, MBA from IIM",
+      "email": "kavita.sharma@novatech.com"
+    },
+    "head_product": {
+      "name": "Anil Kumar",
+      "title": "Head of Product",
+      "responsibilities": ["Leads all product suites", "Product strategy", "User experience"],
+      "background": "Product leader with 10+ years experience",
+      "email": "anil.kumar@novatech.com"
+    },
+    "vp_sales_marketing": {
+      "name": "Rhea Kapoor",
+      "title": "VP Sales & Marketing",
+      "responsibilities": ["GTM strategy", "Partnerships", "Revenue growth"],
+      "background": "Former VP Sales at EnterpriseTech",
+      "email": "rhea.kapoor@novatech.com"
+    },
+    "head_support": {
+      "name": "Mohan Iyer",
+      "title": "Head of Support",
+      "responsibilities": ["Customer success", "Service delivery", "Support operations"],
+      "background": "Customer success expert with 12+ years",
+      "email": "mohan.iyer@novatech.com"
+    }
+  },
+  "shareholding": {
+    "founders": {
+      "priya_menon": "28%",
+      "rajesh_gupta": "20%",
+      "kavita_sharma": "8%"
+    },
+    "investors": {
+      "angel_investors": "15%",
+      "techgrowth_ventures": "18%"
+    },
+    "employees": {
+      "esop_pool": "11%"
+    },
+    "others": {
+      "advisory_board": "0.5%"
+    }
+  },
+  "departments": {
+    "product_engineering": {
+      "head": "Anil Kumar",
+      "size": 60,
+      "focus": ["Product development", "Engineering", "Quality assurance"]
+    },
+    "sales_marketing": {
+      "head": "Rhea Kapoor",
+      "size": 45,
+      "focus": ["Sales", "Marketing", "Partnerships"]
+    },
+    "support_success": {
+      "head": "Mohan Iyer",
+      "size": 35,
+      "focus": ["Customer support", "Success management", "Training"]
+    },
+    "operations_finance": {
+      "head": "Kavita Sharma",
+      "size": 30,
+      "focus": ["Finance", "HR", "Legal", "Operations"]
+    },
+    "ai_research_rd": {
+      "head": "Rajesh Gupta",
+      "size": 40,
+      "focus": ["AI/ML research", "R&D", "Innovation"]
+    }
+  }
+} 

@@ -1,0 +1,47 @@
+# Core AI and ML
+google-generativeai>=0.3.0
+
+# LangChain Framework for LLM Applications
+langchain>=0.1.0
+langchain-google-genai>=0.0.5
+langchain-community>=0.0.10
+langchain-core>=0.1.0
+langchain-huggingface>=0.0.5
+
+# LangGraph for Stateful AI Workflows
+langgraph>=0.0.20
+
+# Vector Database and Embeddings
+faiss-cpu>=1.7.4
+sentence-transformers>=2.2.0
+torch>=2.0.0
+transformers>=4.30.0
+
+# FastAPI Backend
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=11.0.0
+
+# Web Framework for Streamlit Interface (optional)
+streamlit>=1.28.0
+streamlit-chat>=0.1.1
+
+# HTTP Requests and APIs
+requests>=2.31.0
+httpx>=0.24.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Environment and Configuration
+python-dotenv>=1.0.0
+
+# Logging and Utilities
+python-multipart>=0.0.6
+typing-extensions>=4.7.0
+
+# Development and Testing (optional)
+pytest>=7.4.0
+black>=23.7.0
+flake8>=6.0.0 

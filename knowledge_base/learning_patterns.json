@@ -1,0 +1,32 @@
+[
+  {
+    "pattern": "latest novatech's products?",
+    "frequency": 1,
+    "success_rate": 0.0,
+    "common_responses": [
+      "NovaTech offers NovaCRM, NovaHR, NovaDesk, and NovaAnalytics..."
+    ],
+    "last_updated": "2025-08-26T15:08:08.812786",
+    "confidence_threshold": 0.7
+  },
+  {
+    "pattern": "market performing? saas",
+    "frequency": 1,
+    "success_rate": 0.0,
+    "common_responses": [
+      "The SaaS market is experiencing strong growth with increasing adoption..."
+    ],
+    "last_updated": "2025-08-26T15:08:08.816922",
+    "confidence_threshold": 0.7
+  },
+  {
+    "pattern": "about business software tell trends",
+    "frequency": 1,
+    "success_rate": 0.0,
+    "common_responses": [
+      "AI integration in business software is accelerating with focus on automation..."
+    ],
+    "last_updated": "2025-08-26T15:08:08.820041",
+    "confidence_threshold": 0.7
+  }
+]

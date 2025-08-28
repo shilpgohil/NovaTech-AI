@@ -1,0 +1,63 @@
+{
+  "company_name": "NovaTech Solutions Pvt. Ltd.",
+  "industry": "SaaS (Enterprise software for CRM, HR, IT Helpdesk, Analytics)",
+  "founded": "April 12, 2018",
+  "headquarters": "Bengaluru, India",
+  "office_locations": [
+    "Bengaluru, India (Headquarters)",
+    "Mumbai, India",
+    "Delhi, India",
+    "Austin, TX, USA"
+  ],
+  "mission": "To empower businesses through intelligent software that bridges customer engagement, workforce operations, and decision-making.",
+  "vision": "To become the world's most trusted SaaS partner for SMBs and mid‑market enterprises.",
+  "core_values": [
+    "Innovation",
+    "Customer First",
+    "Integrity",
+    "Collaboration",
+    "Data‑Driven"
+  ],
+  "contact": {
+    "email": "info@novatech.com",
+    "phone": "+91 80 1234 5678",
+    "website": "www.novatech.com",
+    "address": "Tech Park, Whitefield, Bengaluru, Karnataka 560066, India"
+  },
+  "social_media": {
+    "linkedin": "NovaTech-Solutions",
+    "twitter": "@NovaTechAI",
+    "youtube": "NovaTech Tutorials"
+  },
+  "financials": {
+    "revenue_fy2024": "₹105.3 Cr (~$13M)",
+    "gross_margin": "75%",
+    "operating_expenses": "₹52.5 Cr",
+    "net_profit": "₹18.6 Cr (~$2.3M)",
+    "net_margin": "17.6%",
+    "customer_count": 1200,
+    "arpu": "₹42,000/year (~$500)"
+  },
+  "valuation": {
+    "implied_valuation": "₹500 Cr ($60M)",
+    "price_per_share": "₹500/share",
+    "annualized_growth": "+25%",
+    "listing_status": "Private company"
+  },
+  "employees": {
+    "total": 210,
+    "departments": {
+      "product_engineering": 60,
+      "sales_marketing": 45,
+      "support_success": 35,
+      "operations_finance": 30,
+      "ai_research_rd": 40
+    }
+  },
+  "culture": [
+    "Innovation week",
+    "Quarterly hackathons",
+    "Flexible remote/hybrid work models",
+    "Employee wellness programs"
+  ]
+} 

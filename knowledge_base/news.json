@@ -1,0 +1,15 @@
+{
+  "last_updated": "2025-08-29T01:11:18.768594",
+  "total_articles": 1,
+  "articles": [
+    {
+      "title": "API Rate Limit Exceeded",
+      "description": "GNews API rate limit exceeded or service unavailable. Please try again later.",
+      "url": "",
+      "published_at": "2025-08-29T01:11:18.766265",
+      "source": "System",
+      "content": "",
+      "retrieved_at": "2025-08-29T01:11:18.767576"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "strategic_partners": [
+    {
+      "name": "CloudBridge Corp.",
+      "domain": "Cloud Infrastructure (hosting, security)",
+      "collaboration_type": "Hosting, backup, ISO‑certified cloud service partner",
+      "services": ["Cloud hosting", "Backup services", "Security compliance", "ISO certification"],
+      "partnership_start": "2019",
+      "contact": "partnerships@cloudbridge.com"
+    },
+    {
+      "name": "DataSync Pvt. Ltd.",
+      "domain": "Data Integration",
+      "collaboration_type": "ETL pipelines and connectors",
+      "services": ["ETL pipelines", "Zapier connectors", "Salesforce integration", "Workday integration"],
+      "partnership_start": "2020",
+      "contact": "partners@datasync.com"
+    },
+    {
+      "name": "SmartAssist AI",
+      "domain": "AI/ML Platform",
+      "collaboration_type": "Co‑developed recommendation engine for NovaAnalytics",
+      "services": ["AI recommendation engine", "ML models", "Predictive analytics", "Smart insights"],
+      "partnership_start": "2021",
+      "contact": "partnerships@smartassist.ai"
+    },
+    {
+      "name": "HRUnity",
+      "domain": "Payroll Compliance",
+      "collaboration_type": "Localization and tax compliance integrations in NovaHR",
+      "services": ["Payroll compliance", "Tax calculations", "Local regulations", "HR automation"],
+      "partnership_start": "2020",
+      "contact": "partners@hrunity.com"
+    },
+    {
+      "name": "EduLearn Academy",
+      "domain": "Training & Support",
+      "collaboration_type": "Conducts onboarding sessions & customer training programs",
+      "services": ["Customer training", "Onboarding sessions", "Certification programs", "Support training"],
+      "partnership_start": "2022",
+      "contact": "partnerships@edulearn.com"
+    }
+  ],
+  "sectors_served": [
+    {
+      "sector": "Retail & e‑Commerce",
+      "solutions": ["NovaCRM + Analytics for customer segmentation"],
+      "use_cases": ["Customer segmentation", "Sales tracking", "Inventory management", "Customer analytics"]
+    },
+    {
+      "sector": "Professional Services (Consulting, BPO)",
+      "solutions": ["NovaDesk + NovaCRM for support & workforce management"],
+      "use_cases": ["Support management", "Workforce tracking", "Client management", "Service delivery"]
+    },
+    {
+      "sector": "Healthcare & Clinics",
+      "solutions": ["NovaHR, Analytics for staff and patient metrics"],
+      "use_cases": ["Staff management", "Patient analytics", "Compliance reporting", "Resource optimization"]
+    },
+    {
+      "sector": "Manufacturing & Logistics",
+      "solutions": ["Analytics + Helpdesk for operational visibility"],
+      "use_cases": ["Operational analytics", "Support management", "Supply chain tracking", "Performance monitoring"]
+    },
+    {
+      "sector": "Education & EdTech Firms",
+      "solutions": ["CRM + HR suite for student/employee management"],
+      "use_cases": ["Student management", "Employee tracking", "Course analytics", "Administrative efficiency"]
+    }
+  ],
+  "market_verticals": {
+    "small_business": {
+      "company_size": "10-50 employees",
+      "primary_products": ["NovaCRM", "NovaDesk"],
+      "typical_use_cases": ["Lead management", "Customer support", "Basic analytics"]
+    },
+    "mid_market": {
+      "company_size": "50-500 employees",
+      "primary_products": ["NovaCRM", "NovaHR", "NovaAnalytics"],
+      "typical_use_cases": ["Sales automation", "HR management", "Business intelligence"]
+    },
+    "enterprise": {
+      "company_size": "500+ employees",
+      "primary_products": ["All products", "Custom integrations"],
+      "typical_use_cases": ["Enterprise-wide deployment", "Custom solutions", "Advanced analytics"]
+    }
+  },
+  "customer_personas": [
+    {
+      "name": "Meera Jain",
+      "role": "Sales Manager",
+      "needs": "Cloud CRM to track leads, run campaigns, measure KPIs",
+      "challenge": "Low conversion rates",
+      "solution": "NovaCRM with analytics",
+      "company_size": "Mid-market"
+    },
+    {
+      "name": "Akash Singh",
+      "role": "HR Head",
+      "needs": "Automating payroll, leave, onboarding",
+      "challenge": "Manual spreadsheets, compliance",
+      "solution": "NovaHR with compliance features",
+      "company_size": "Enterprise"
+    },
+    {
+      "name": "Priyanka Rao",
+      "role": "IT Lead",
+      "needs": "Streamlined ticket management and knowledge base",
+      "challenge": "Slow manual support",
+      "solution": "NovaDesk with AI automation",
+      "company_size": "Mid-market"
+    },
+    {
+      "name": "Samir Patel",
+      "role": "Business Analyst",
+      "needs": "Interactive dashboards and alerts",
+      "challenge": "Manual spreadsheets, delayed insights",
+      "solution": "NovaAnalytics with smart alerts",
+      "company_size": "Enterprise"
+    }
+  ]
+} 

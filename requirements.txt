@@ -44,4 +44,7 @@ typing-extensions>=4.7.0
 # Development and Testing (optional)
 pytest>=7.4.0
 black>=23.7.0
-flake8>=6.0.0 
+flake8>=6.0.0
+
+# Production Dependencies
+gunicorn>=21.0.0 

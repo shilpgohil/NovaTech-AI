@@ -72,8 +72,8 @@ if CORS_AVAILABLE:
             "http://127.0.0.1:3000", 
             "http://127.0.0.1:3001", 
             "http://127.0.0.1:3002",
-            # Production - Add your Render domains here after deployment
-            # Example: "https://your-frontend-service.onrender.com"
+            # Production - Add your Vercel domain here after deployment
+            "https://nova-tech-ai-phun.vercel.app",  # Your Vercel domain
             # Allow all origins in development (remove in production)
             "*"
         ],

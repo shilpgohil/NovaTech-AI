@@ -67,6 +67,8 @@ origins = [
     "http://localhost:3000",
     "http://localhost:3001", 
     "http://localhost:3002",
+    "https://novatech-ai-frontend.onrender.com",  # Your Render frontend
+    "https://novatech-ai-backend.onrender.com",  # Your Render backend
     "*"  # Allow all origins for now - will update after frontend deployment
 ]
 
@@ -155,6 +157,24 @@ def load_ai_components():
     except Exception as e:
         logger.error(f"❌ Error loading AI components: {e}")
         # Keep existing components if any
+
+# Root endpoint
+@app.get("/")
+async def root():
+    """Root endpoint - redirects to health check"""
+    return {
+        "message": "Welcome to NovaTech AI Backend",
+        "version": "2.0.0",
+        "endpoints": {
+            "health": "/health",
+            "chat": "/api/chat",
+            "langchain_chat": "/api/langchain/chat",
+            "knowledge": "/api/knowledge/{category}"
+        },
+        "status": "running"
+    }
+
+
 
 # Health check endpoint
 @app.get("/health")

@@ -4,7 +4,9 @@ services:
     name: novatech-ai-backend
     env: python
     plan: starter  # Changed from free to starter for more memory
-    buildCommand: pip install -r requirements.txt && pip install gunicorn
+    buildCommand: |
+      pip install -r requirements.txt
+      pip install gunicorn
     startCommand: gunicorn backend_server_production:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --workers 1 --max-requests 1000 --max-requests-jitter 100 --timeout 120 --keep-alive 5
     envVars:
       - key: PYTHON_VERSION

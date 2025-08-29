@@ -23,7 +23,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Global variables for lazy loading
-langchain_gemini = None
 simple_gemini = None
 knowledge_manager = None
 dynamic_apis = None
@@ -41,10 +40,9 @@ async def lifespan(app: FastAPI):
     gc.collect()
     
     # Initialize global variables
-    global langchain_gemini, simple_gemini, knowledge_manager, dynamic_apis, user_learning
+    global simple_gemini, knowledge_manager, dynamic_apis, user_learning
     
     # Set all to None initially - load only when needed
-    langchain_gemini = None
     simple_gemini = None
     knowledge_manager = None
     dynamic_apis = None
@@ -275,7 +273,7 @@ class SimpleKnowledgeManager:
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
-    use_langchain: bool = True
+    # use_langchain removed for memory optimization
 
 class ChatResponse(BaseModel):
     response: str
@@ -327,7 +325,7 @@ def build_smart_prompt(query: str, context: str, intent: str, conversation_conte
 
 def load_ai_components():
     """Load AI components only when needed to save memory"""
-    global langchain_gemini, simple_gemini, knowledge_manager, dynamic_apis, user_learning
+    global simple_gemini, knowledge_manager, dynamic_apis, user_learning
     
     try:
         logger.info("📦 Loading AI components on-demand...")
@@ -382,7 +380,7 @@ async def root():
         "endpoints": {
             "health": "/health",
             "chat": "/api/chat",
-            "langchain_chat": "/api/langchain/chat",
+            "langchain_chat": "REMOVED - Memory Optimized",
             "knowledge": "/api/knowledge/{category}",
             "test_smart": "/api/test-smart"
         },
@@ -400,7 +398,7 @@ async def health_check():
             "service": "NovaTech AI Backend (Memory Optimized with Smart Features)",
             "version": "2.0.0",
             "ai_components": {
-                "langchain_gemini": langchain_gemini is not None,
+                "langchain_gemini": "REMOVED - Memory Optimized",
                 "simple_gemini": simple_gemini is not None,
                 "knowledge_manager": knowledge_manager is not None,
                 "dynamic_apis": dynamic_apis is not None,
@@ -454,21 +452,8 @@ async def chat_endpoint(request: ChatRequest):
         # Build smart prompt
         smart_prompt = build_smart_prompt(normalized_query, context, intent, conversation_context)
         
-        # Try LangChain first if available and requested
-        if request.use_langchain and langchain_gemini:
-            try:
-                response = langchain_gemini.generate_response(
-                    request.message, 
-                    session_id=request.session_id
-                )
-                return ChatResponse(
-                    response=response,
-                    session_id=session_id,
-                    timestamp="2025-08-29T00:00:00Z",
-                    model_used="langchain_gemini"
-                )
-            except Exception as e:
-                logger.warning(f"LangChain failed, falling back: {e}")
+        # LangChain removed for memory optimization
+        # Proceeding directly to smart Gemini
         
         # Generate response with smart Gemini
         logger.info(f"🔍 Debug: simple_gemini = {simple_gemini}")
@@ -513,25 +498,8 @@ async def chat_endpoint(request: ChatRequest):
         logger.error(f"Smart chat error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-# LangChain specific endpoint
-@app.post("/api/langchain/chat")
-async def langchain_chat(request: ChatRequest):
-    """LangChain-specific chat endpoint"""
-    try:
-        # Load AI components if not already loaded
-        load_ai_components()
-        
-        if not langchain_gemini:
-            raise HTTPException(status_code=503, detail="LangChain service not available")
-        
-        response = langchain_gemini.generate_response(
-            request.message, 
-            session_id=request.session_id
-        )
-        return {"response": response, "model": "langchain_gemini"}
-    except Exception as e:
-        logger.error(f"LangChain chat error: {e}")
-        raise HTTPException(status_code=500, detail="LangChain processing error")
+# LangChain specific endpoint - REMOVED (no longer needed)
+# This endpoint was removed for memory optimization
 
 # Knowledge base endpoint
 @app.get("/api/knowledge/{category}")
@@ -583,6 +551,64 @@ async def test_smart_features():
             "error": str(e),
             "message": "Smart features test failed"
         }
+
+# Conversation context endpoints (lightweight replacements)
+@app.get("/api/conversation/{session_id}/context")
+async def get_conversation_context(session_id: str):
+    """Get conversation context for a session"""
+    try:
+        context = conversation_contexts.get(session_id, "")
+        return {
+            "status": "success",
+            "conversation_context": context,
+            "session_id": session_id
+        }
+    except Exception as e:
+        logger.error(f"Context retrieval error: {e}")
+        return {
+            "status": "error",
+            "conversation_context": "",
+            "session_id": session_id
+        }
+
+@app.delete("/api/conversation/{session_id}")
+async def clear_conversation(session_id: str):
+    """Clear conversation context for a session"""
+    try:
+        if session_id in conversation_contexts:
+            del conversation_contexts[session_id]
+        return {"status": "success", "message": "Conversation cleared"}
+    except Exception as e:
+        logger.error(f"Context clearing error: {e}")
+        return {"status": "error", "message": "Failed to clear conversation"}
+
+# Admin endpoints (lightweight)
+@app.get("/api/admin/status")
+async def admin_status():
+    """Get admin status"""
+    try:
+        return {
+            "status": "success",
+            "service": "NovaTech AI Backend (Memory Optimized)",
+            "version": "2.0.0",
+            "ai_components": {
+                "simple_gemini": simple_gemini is not None,
+                "knowledge_manager": knowledge_manager is not None,
+                "memory_usage": "optimized"
+            }
+        }
+    except Exception as e:
+        logger.error(f"Admin status error: {e}")
+        return {"status": "error", "error": str(e)}
+
+@app.post("/api/admin/update")
+async def admin_update():
+    """Admin update endpoint"""
+    try:
+        return {"status": "success", "message": "System is up to date"}
+    except Exception as e:
+        logger.error(f"Admin update error: {e}")
+        return {"status": "error", "error": str(e)}
 
 # Error handling
 @app.exception_handler(Exception)

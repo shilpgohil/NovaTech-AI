@@ -68,7 +68,7 @@ origins = [
     "http://localhost:3001", 
     "http://localhost:3002",
     "https://*.vercel.app",  # Vercel frontend domains
-    "https://nova-tech-ai-fo2e.vercel.app",  # Your current Vercel domain
+    "https://nova-tech-ai-zw8k.vercel.app",  # Your current Vercel domain
     "*"  # Allow all origins for now - will update after frontend deployment
 ]
 

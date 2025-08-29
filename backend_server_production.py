@@ -67,7 +67,6 @@ origins = [
     "http://localhost:3000",
     "http://localhost:3001", 
     "http://localhost:3002",
-    "https://novatech-ai-p1ar.onrender.com",  # Your current Render backend
     "https://*.vercel.app",  # Vercel frontend domains
     "https://nova-tech-ai-phun.vercel.app",  # Your specific Vercel domain
     "*"  # Allow all origins for now - will update after frontend deployment

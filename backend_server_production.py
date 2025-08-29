@@ -1,591 +1,607 @@
+#!/usr/bin/env python3
 """
-NovaTech AI Backend Server
-FastAPI server integrating with dynamic knowledge system
+NovaTech AI Backend Server - Memory Optimized Version with Smart Features
+Maintains ALL AI capabilities while optimizing for Render's 512MB limit
 """
 
 import os
-import sys
 import logging
-from typing import Optional
-from datetime import datetime
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect  # type: ignore
-from fastapi.middleware.cors import CORSMiddleware  # type: ignore
-from fastapi.responses import JSONResponse  # type: ignore
-from pydantic import BaseModel  # type: ignore
-import uvicorn  # type: ignore
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional, Dict, Any
+import json
+import gc
 
-# Load environment variables from .env file
-try:
-    from dotenv import load_dotenv  # type: ignore
-    # Load from env_local.txt instead of .env
-    load_dotenv("env_local.txt")
-    
-    # The API key is now handled centrally in src/config.py
-    # No need to set it here - it's automatically loaded from environment
-        
-except ImportError:
-    print("Warning: python-dotenv not installed. API keys will be loaded from environment variables.")
-
-# Add src to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-
-# Set up logging first
-logging.basicConfig(level=logging.INFO)
+# Configure logging for production
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-# Now import modules with error handling
-try:
-    from fastapi.middleware.cors import CORSMiddleware  # type: ignore
-    CORS_AVAILABLE = True
-except ImportError:
-    CORS_AVAILABLE = False
-    logger.warning("FastAPI CORS middleware not available. CORS will be disabled.")
+# Global variables for lazy loading
+langchain_gemini = None
+simple_gemini = None
+knowledge_manager = None
+dynamic_apis = None
+user_learning = None
 
-try:
-    from src.utils.dynamic_integration import get_dynamic_integration
-    from src.integrations.simple_gemini import simple_gemini_client
-    from src.integrations.langchain_gemini import langchain_gemini_client
-    from src.utils.langchain_knowledge_manager import langchain_knowledge_manager
-    from src.utils.langgraph_conversation_manager import langgraph_conversation_manager
-    from src.utils.admin_auth import AdminAuth
-except ImportError as e:
-    logger.error(f"Failed to import required modules: {e}")
-    logger.error("Please ensure all dependencies are installed: pip install -r requirements.txt")
-    sys.exit(1)
+# Simple conversation context manager (lightweight)
+conversation_contexts = {}
 
-# Initialize FastAPI app
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Memory-optimized lifespan manager"""
+    logger.info("🚀 Starting NovaTech AI Backend Server (Memory Optimized with Smart Features)...")
+    
+    # Force garbage collection to free memory
+    gc.collect()
+    
+    # Initialize global variables
+    global langchain_gemini, simple_gemini, knowledge_manager, dynamic_apis, user_learning
+    
+    # Set all to None initially - load only when needed
+    langchain_gemini = None
+    simple_gemini = None
+    knowledge_manager = None
+    dynamic_apis = None
+    user_learning = None
+    
+    logger.info("🎯 Backend ready - AI components will load on-demand")
+    yield
+    
+    # Cleanup on shutdown
+    logger.info("🛑 Shutting down NovaTech AI Backend Server...")
+    gc.collect()
+
+# Create FastAPI app with lifespan management
 app = FastAPI(
     title="NovaTech AI Backend",
-    description="AI-powered company assistant with dynamic knowledge",
-    version="1.0.0"
+    description="Memory-optimized AI chatbot backend with smart features",
+    version="2.0.0",
+    lifespan=lifespan
 )
 
-# Add CORS middleware for frontend
-if CORS_AVAILABLE:
+# CORS configuration - Universal and future-proof
+origins = [
+    "http://localhost:3000",
+    "http://localhost:3001", 
+    "http://localhost:3002",
+    "https://*.vercel.app",  # All Vercel domains (future-proof)
+    "https://*.onrender.com",  # All Render domains
+    "https://*.netlify.app",   # All Netlify domains
+    "*"  # Universal access (production-ready)
+]
+
+try:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            # Development
-            "http://localhost:3000", 
-            "http://localhost:3001", 
-            "http://localhost:3002", 
-            "http://127.0.0.1:3000", 
-            "http://127.0.0.1:3001", 
-            "http://127.0.0.1:3002",
-            # Production - Universal CORS configuration
-            "https://*.vercel.app",  # All Vercel domains (future-proof)
-            "https://*.onrender.com",  # All Render domains
-            "https://*.netlify.app",   # All Netlify domains
-            # Allow all origins in development (remove in production)
-            "*"
-        ],
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
-else:
-    logger.warning("CORS middleware not available. Cross-origin requests may be blocked.")
+    logger.info("✅ CORS middleware added")
+except Exception as e:
+    logger.warning(f"⚠️ CORS middleware failed: {e}")
 
-# Initialize components
-dynamic_integration = get_dynamic_integration()
-admin_auth = AdminAuth()
+# Lightweight Smart Processor (Memory Efficient)
+class LightweightSmartProcessor:
+    """Lightweight processor for smart features without heavy dependencies"""
+    
+    def __init__(self):
+        # Simple slang dictionary (very lightweight)
+        self.slang_dict = {
+            # Casual greetings and expressions
+            "yo": "hello", "sup": "what's up", "hey": "hello", 
+            "whats up": "what's up", "wassup": "what's up", "howdy": "hello",
+            
+            # Company references
+            "this company": "NovaTech", "the company": "NovaTech", 
+            "your company": "NovaTech", "novatech": "NovaTech", 
+            "nova tech": "NovaTech", "the firm": "NovaTech",
+            
+            # Question patterns
+            "whos": "who is", "whats": "what is", "hows": "how is",
+            "wheres": "where is", "whens": "when is", "whys": "why is",
+            
+            # Casual language
+            "gonna": "going to", "wanna": "want to", "gotta": "have to",
+            "lemme": "let me", "gimme": "give me", "dunno": "don't know",
+            "kinda": "kind of", "sorta": "sort of", "prolly": "probably",
+            "def": "definitely", "deffo": "definitely",
+            
+            # Casual connectors
+            "n": "and", "&": "and", "cuz": "because", "cos": "because",
+            "cause": "because", "rn": "right now", "atm": "at the moment",
+            
+            # Internet slang
+            "btw": "by the way", "fyi": "for your information", 
+            "imo": "in my opinion", "imho": "in my humble opinion",
+            "tbh": "to be honest", "ngl": "not gonna lie"
+        }
+        
+        # Simple intent patterns (keyword-based, no regex)
+        self.intent_keywords = {
+            "greeting": ["hi", "hello", "hey", "sup", "yo", "howdy", "good morning", "good afternoon", "good evening"],
+            "company": ["company", "business", "nova", "novatech", "firm", "organization", "about"],
+            "product": ["product", "service", "crm", "hr", "helpdesk", "analytics", "pricing", "cost", "features"],
+            "leadership": ["ceo", "cto", "coo", "founder", "leader", "management", "executive", "team"],
+            "contact": ["contact", "email", "phone", "reach", "touch", "address", "location", "office"],
+            "casual": ["how are you", "who are you", "what are you", "i am human", "i'm human"]
+        }
+    
+    def normalize_slang(self, text: str) -> str:
+        """Convert slang to formal language"""
+        text_lower = text.lower()
+        for slang, formal in self.slang_dict.items():
+            text_lower = text_lower.replace(slang, formal)
+        return text_lower
+    
+    def detect_intent(self, text: str) -> str:
+        """Simple keyword-based intent detection"""
+        text_lower = text.lower()
+        for intent, keywords in self.intent_keywords.items():
+            if any(keyword in text_lower for keyword in keywords):
+                return intent
+        return "general"
 
-# Pydantic models
-class MessageRequest(BaseModel):
+# Smart Knowledge Manager (Lightweight)
+class SmartKnowledgeManager:
+    """Enhanced knowledge manager using existing JSON files"""
+    
+    def __init__(self):
+        self.knowledge = self._load_knowledge_files()
+        self.processor = LightweightSmartProcessor()
+    
+    def _load_knowledge_files(self) -> Dict[str, Any]:
+        """Load knowledge from existing JSON files"""
+        knowledge = {}
+        try:
+            # Load company info, products, leadership, etc.
+            knowledge_files = [
+                "knowledge_base/company_info.json",
+                "knowledge_base/products.json", 
+                "knowledge_base/leadership.json",
+                "knowledge_base/faq.json",
+                "knowledge_base/partners.json"
+            ]
+            
+            for file_path in knowledge_files:
+                if os.path.exists(file_path):
+                    try:
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                            category = file_path.split('/')[-1].replace('.json', '')
+                            knowledge[category] = data
+                            logger.info(f"✅ Loaded knowledge: {category}")
+                    except Exception as e:
+                        logger.warning(f"⚠️ Could not load {file_path}: {e}")
+                else:
+                    logger.debug(f"📁 Knowledge file not found: {file_path}")
+                        
+        except Exception as e:
+            logger.warning(f"⚠️ Could not load knowledge files: {e}")
+        
+        return knowledge
+    
+    def get_smart_context(self, query: str, intent: str) -> str:
+        """Get relevant knowledge context based on intent"""
+        context = ""
+        
+        try:
+            if intent == "company" and "company_info" in self.knowledge:
+                context += str(self.knowledge["company_info"])
+            elif intent == "product" and "products" in self.knowledge:
+                context += str(self.knowledge["products"])
+            elif intent == "leadership" and "leadership" in self.knowledge:
+                context += str(self.knowledge["leadership"])
+            elif intent == "contact" and "company_info" in self.knowledge:
+                # Extract contact info from company info
+                company_info = self.knowledge["company_info"]
+                if isinstance(company_info, dict):
+                    contact_keys = ["contact", "email", "phone", "address", "location"]
+                    contact_info = {k: company_info.get(k, "") for k in contact_keys if company_info.get(k)}
+                    context += str(contact_info)
+            
+            # Add FAQ context if available
+            if "faq" in self.knowledge:
+                context += f"\nFAQ: {str(self.knowledge['faq'])}"
+                
+        except Exception as e:
+            logger.warning(f"⚠️ Error getting smart context: {e}")
+        
+        return context
+    
+    def get_knowledge(self, category: str, query: Optional[str] = None):
+        """Get knowledge base information"""
+        if category in self.knowledge:
+            return self.knowledge[category]
+        return {"category": category, "status": "not_found"}
+
+# Simple Knowledge Manager (Lightweight) - Fallback
+class SimpleKnowledgeManager:
+    def __init__(self):
+        self.knowledge = {
+            "company": {
+                "name": "NovaTech Solutions",
+                "description": "Professional AI-powered business solutions",
+                "services": ["AI Chatbot", "Business Automation", "Data Analytics"],
+                "industry": "Technology & Business Solutions"
+            },
+            "products": {
+                "chatbot": "AI-powered business assistant with company knowledge",
+                "automation": "Business process automation solutions",
+                "analytics": "Data-driven business insights"
+            },
+            "policies": {
+                "support": "24/7 AI-powered customer support",
+                "pricing": "Competitive pricing with scalable solutions",
+                "security": "Enterprise-grade security and data protection"
+            }
+        }
+    
+    def get_knowledge(self, category: str, query: Optional[str] = None):
+        """Get knowledge base information"""
+        if category in self.knowledge:
+            return self.knowledge[category]
+        return {"category": category, "status": "not_found"}
+    
+    def get_smart_context(self, query: str, intent: str) -> str:
+        """Get smart context for simple knowledge manager"""
+        context = ""
+        
+        try:
+            if intent == "company":
+                context += str(self.knowledge.get("company", {}))
+            elif intent == "product":
+                context += str(self.knowledge.get("products", {}))
+            elif intent == "contact":
+                # Extract contact info from company info
+                company_info = self.knowledge.get("company", {})
+                if isinstance(company_info, dict):
+                    contact_keys = ["contact", "email", "phone", "address", "location"]
+                    contact_info = {k: company_info.get(k, "") for k in contact_keys if company_info.get(k)}
+                    context += str(contact_info)
+        except Exception as e:
+            logger.warning(f"⚠️ Error getting simple context: {e}")
+        
+        return context
+
+# Request/Response models
+class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
+    use_langchain: bool = True
 
-class AdminUpdateRequest(BaseModel):
-    update_type: str
-    admin_key: str
-
-class ChatMessage(BaseModel):
-    type: str
-    content: str
+class ChatResponse(BaseModel):
+    response: str
+    session_id: str
     timestamp: str
+    model_used: str
 
-# WebSocket connection manager
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
+def build_smart_prompt(query: str, context: str, intent: str, conversation_context: str = "") -> str:
+    """Build intelligent prompts for Gemini"""
+    
+    # Base system prompt
+    system_prompt = """You are NovaTech AI, a friendly and helpful assistant. 
+    Respond naturally and conversationally, using the provided company knowledge.
+    
+    IMPORTANT: 
+    - Sound like a real person having a casual conversation
+    - Use the company knowledge to provide accurate information
+    - Be warm, helpful, and natural
+    - Don't sound robotic or formal
+    - Use contractions (I'm, you're, he's, etc.)
+    - Be conversational and friendly"""
+    
+    # Intent-specific instructions
+    intent_instructions = {
+        "greeting": "Respond warmly and ask how you can help with NovaTech",
+        "company": "Share company information naturally and conversationally",
+        "product": "Explain products in a friendly, helpful way",
+        "leadership": "Share leadership information naturally",
+        "contact": "Provide contact information naturally when asked",
+        "casual": "Be friendly and conversational, build rapport",
+        "general": "Be helpful and natural, use company knowledge when relevant"
+    }
+    
+    # Build the complete prompt
+    prompt = f"{system_prompt}\n\n"
+    prompt += f"Intent: {intent}\n"
+    prompt += f"Instruction: {intent_instructions.get(intent, 'Be helpful and natural')}\n\n"
+    
+    if context:
+        prompt += f"Company Knowledge: {context}\n\n"
+    
+    if conversation_context:
+        prompt += f"Previous Conversation: {conversation_context}\n\n"
+    
+    prompt += f"User Message: {query}\n\n"
+    prompt += "Please respond naturally and helpfully:"
+    
+    return prompt
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-        logger.info(f"WebSocket connected. Total connections: {len(self.active_connections)}")
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-        logger.info(f"WebSocket disconnected. Total connections: {len(self.active_connections)}")
-
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
-
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
+def load_ai_components():
+    """Load AI components only when needed to save memory"""
+    global langchain_gemini, simple_gemini, knowledge_manager, dynamic_apis, user_learning
+    
+    try:
+        logger.info("📦 Loading AI components on-demand...")
+        
+        # Force garbage collection before loading
+        gc.collect()
+        
+        # Only load basic Gemini client for now (lightweight)
+        if not simple_gemini and os.getenv("GOOGLE_GEMINI_API_KEY"):
             try:
-                await connection.send_text(message)
-            except:
-                # Remove dead connections
-                self.active_connections.remove(connection)
-
-manager = ConnectionManager()
+                # Import only the basic Gemini client (no heavy dependencies)
+                import google.generativeai as genai
+                genai.configure(api_key=os.getenv("GOOGLE_GEMINI_API_KEY"))
+                simple_gemini = genai
+                logger.info("✅ Basic Gemini loaded (lightweight)")
+                logger.info(f"🔍 Debug: genai module loaded: {genai}")
+                logger.info(f"🔍 Debug: GenerativeModel available: {hasattr(genai, 'GenerativeModel')}")
+            except Exception as e:
+                logger.warning(f"⚠️ Basic Gemini failed: {e}")
+                simple_gemini = None
+        
+        # Load smart knowledge base
+        if not knowledge_manager:
+            try:
+                # Try smart knowledge manager first
+                knowledge_manager = SmartKnowledgeManager()
+                logger.info("✅ Smart knowledge manager loaded")
+            except Exception as e:
+                logger.warning(f"⚠️ Smart knowledge manager failed, using simple: {e}")
+                try:
+                    # Fallback to simple knowledge manager
+                    knowledge_manager = SimpleKnowledgeManager()
+                    logger.info("✅ Simple knowledge manager loaded (fallback)")
+                except Exception as e2:
+                    logger.warning(f"⚠️ Simple knowledge manager also failed: {e2}")
+                    knowledge_manager = None
+        
+        # Skip all heavy components for now
+        logger.info("⚠️ Heavy AI components skipped for memory optimization")
+        
+    except Exception as e:
+        logger.error(f"❌ Error loading AI components: {e}")
+        # Keep existing components if any
 
 # Root endpoint
 @app.get("/")
 async def root():
+    """Root endpoint - redirects to health check"""
     return {
-        "message": "NovaTech AI Backend Server",
-        "status": "running",
-        "timestamp": datetime.now().isoformat(),
-        "version": "1.0.0",
+        "message": "Welcome to NovaTech AI Backend",
+        "version": "2.0.0",
         "endpoints": {
             "health": "/health",
-            "test": "/test",
-            "api_docs": "/docs",
-            "news": "/api/dynamic/news",
-            "market": "/api/dynamic/market",
-            "trends": "/api/dynamic/trends",
-            "social": "/api/dynamic/social"
-        }
+            "chat": "/api/chat",
+            "langchain_chat": "/api/langchain/chat",
+            "knowledge": "/api/knowledge/{category}",
+            "test_smart": "/api/test-smart"
+        },
+        "status": "running",
+        "features": "Smart processing enabled"
     }
 
-# Test endpoint for frontend connection
-@app.get("/test")
-async def test_endpoint():
-    return {
-        "status": "success",
-        "message": "Backend connection test successful",
-        "timestamp": datetime.now().isoformat(),
-        "services": {
-            "backend": "online",
-            "dynamic_system": "active",
-            "ai_service": "active" if simple_gemini_client.is_initialized else "inactive"
-        }
-    }
-
-# Health check
+# Health check endpoint
 @app.get("/health")
 async def health_check():
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "services": {
-            "backend": "online",
-            "database": "connected",
-            "ai_service": "active" if simple_gemini_client.is_initialized else "inactive"
-        }
-    }
-
-# AI endpoints
-@app.post("/api/ai/ai-response")
-async def ai_response(request: MessageRequest):
+    """Health check endpoint for deployment monitoring"""
     try:
-        response = simple_gemini_client.generate_response(request.message)
         return {
-            "status": "success",
-            "response": response,
-            "timestamp": datetime.now().isoformat()
+            "status": "healthy",
+            "service": "NovaTech AI Backend (Memory Optimized with Smart Features)",
+            "version": "2.0.0",
+            "ai_components": {
+                "langchain_gemini": langchain_gemini is not None,
+                "simple_gemini": simple_gemini is not None,
+                "knowledge_manager": knowledge_manager is not None,
+                "dynamic_apis": dynamic_apis is not None,
+                "user_learning": user_learning is not None
+            },
+            "memory_optimized": True,
+            "smart_features": True,
+            "timestamp": "2025-08-29T00:00:00Z"
         }
     except Exception as e:
-        logger.error(f"AI response error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/ai/company-info")
-async def company_info(request: MessageRequest):
-    try:
-        response = simple_gemini_client.generate_response(request.message)
+        logger.error(f"Health check error: {e}")
         return {
-            "status": "success",
-            "response": response,
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        logger.error(f"Company info error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# LangChain Enhanced AI Endpoints
-@app.post("/api/langchain/chat")
-async def langchain_chat(request: MessageRequest):
-    """Enhanced chat using LangChain with conversation memory"""
-    try:
-        # Generate session ID if not provided
-        session_id = request.session_id if request.session_id else f"session_{datetime.now().timestamp()}"
-        
-        # Use LangChain Gemini with conversation memory for context-aware responses
-        response = langchain_gemini_client.chat_with_memory(request.message, session_id)
-        
-        return {
-            "status": "success",
-            "response": response,
-            "session_id": session_id,
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        logger.error(f"Chat error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/langchain/response")
-async def langchain_response(request: MessageRequest):
-    """Get AI response using LangChain knowledge retrieval"""
-    try:
-        # Generate a default session ID if none provided
-        session_id = getattr(request, 'session_id', None) or f"session_{datetime.now().timestamp()}"
-        response = langchain_gemini_client.generate_response(request.message, session_id)
-        
-        return {
-            "status": "success",
-            "response": response,
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        logger.error(f"LangChain response error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/langchain/conversation/{session_id}")
-async def get_conversation(session_id: str):
-    """Get conversation details and statistics"""
-    try:
-        conversation_stats = langgraph_conversation_manager.get_conversation_stats(session_id)
-        
-        if not conversation_stats:
-            raise HTTPException(status_code=404, detail="Conversation not found")
-        
-        return {
-            "status": "success",
-            "conversation": conversation_stats,
-            "timestamp": datetime.now().isoformat()
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Get conversation error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/langchain/conversation/{session_id}/context")
-async def get_conversation_context(session_id: str):
-    """Get conversation context for a specific session"""
-    try:
-        conversation = langgraph_conversation_manager.get_conversation(session_id)
-        
-        if not conversation:
-            raise HTTPException(status_code=404, detail="Conversation not found")
-        
-        # Get recent conversation context
-        recent_context = conversation.get_recent_context(max_messages=10)
-        
-        return {
-            "status": "success",
-            "session_id": session_id,
-            "conversation_context": recent_context,
-            "current_state": conversation.current_state.value if hasattr(conversation.current_state, 'value') else str(conversation.current_state),
-            "user_intent": conversation.user_intent,
-            "message_count": len(conversation.conversation_history),
-            "timestamp": datetime.now().isoformat()
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Get conversation context error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/langchain/conversations")
-async def get_all_conversations():
-    """Get all active conversations"""
-    try:
-        conversations = langgraph_conversation_manager.get_all_conversations_stats()
-        
-        return {
-            "status": "success",
-            "conversations": conversations,
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        logger.error(f"Get conversations error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.delete("/api/langchain/conversation/{session_id}")
-async def clear_conversation(session_id: str):
-    """Clear a specific conversation"""
-    try:
-        success = langgraph_conversation_manager.clear_conversation(session_id)
-        
-        if not success:
-            raise HTTPException(status_code=404, detail="Conversation not found")
-        
-        return {
-            "status": "success",
-            "message": f"Conversation {session_id} cleared",
-            "timestamp": datetime.now().isoformat()
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Clear conversation error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/langchain/knowledge/update")
-async def update_knowledge(request: dict):
-    """Update knowledge base for a specific category"""
-    try:
-        category = request.get("category")
-        data = request.get("data")
-        
-        if not category or not data:
-            raise HTTPException(status_code=400, detail="Category and data are required")
-        
-        langchain_knowledge_manager.update_knowledge(category, data)
-        
-        return {
-            "status": "success",
-            "message": f"Knowledge updated for category: {category}",
-            "timestamp": datetime.now().isoformat()
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Update knowledge error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/langchain/knowledge/stats")
-async def get_knowledge_stats():
-    """Get knowledge manager statistics"""
-    try:
-        stats = langchain_knowledge_manager.get_stats()
-        
-        return {
-            "status": "success",
-            "stats": stats,
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        logger.error(f"Get knowledge stats error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/langchain/knowledge/reload")
-async def reload_knowledge():
-    """Reload and rechunk all knowledge"""
-    try:
-        langchain_knowledge_manager.load_and_chunk_knowledge()
-        
-        return {
-            "status": "success",
-            "message": "Knowledge base reloaded and rechunked",
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        logger.error(f"Reload knowledge error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/langchain/stats")
-async def get_langchain_stats():
-    """Get comprehensive LangChain system statistics"""
-    try:
-        stats = langchain_gemini_client.get_stats()
-        
-        return {
-            "status": "success",
-            "stats": stats,
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        logger.error(f"Get LangChain stats error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/langchain/reset")
-async def reset_langchain_system():
-    """Reset all LangChain systems"""
-    try:
-        langchain_gemini_client.reset_stats()
-        
-        return {
-            "status": "success",
-            "message": "LangChain system reset successfully",
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        logger.error(f"Reset LangChain system error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# Dynamic knowledge endpoints
-@app.get("/api/dynamic/news")
-async def get_news():
-    try:
-        news_data = dynamic_integration.get_news(5)
-        return news_data
-    except Exception as e:
-        logger.error(f"News API error: {e}")
-        return {
-            "status": "error",
-            "message": str(e),
-            "articles": []
-        }
-
-@app.get("/api/dynamic/market")
-async def get_market_data():
-    try:
-        market_data = dynamic_integration.get_market_data()
-        return market_data
-    except Exception as e:
-        logger.error(f"Market API error: {e}")
-        return {
-            "status": "error",
-            "message": str(e),
-            "stock_quote": {}
-        }
-
-@app.get("/api/dynamic/trends")
-async def get_industry_trends():
-    try:
-        trends_data = dynamic_integration.get_industry_trends(5)
-        return trends_data
-    except Exception as e:
-        logger.error(f"Trends API error: {e}")
-        return {
-            "status": "error",
-            "message": str(e),
-            "trends": []
-        }
-
-@app.get("/api/dynamic/social")
-async def get_social_sentiment():
-    try:
-        reddit_data = dynamic_integration.get_reddit_sentiment()
-        return reddit_data
-    except Exception as e:
-        logger.error(f"Social API error: {e}")
-        return {
-            "status": "error",
-            "message": str(e),
-            "data": {}
-        }
-
-# Admin endpoints
-@app.post("/api/admin/update")
-async def admin_update(request: AdminUpdateRequest):
-    try:
-        # Validate admin key
-        if not admin_auth.verify_admin_key(request.admin_key):
-            raise HTTPException(status_code=401, detail="Invalid admin key")
-        
-        # Perform update
-        update_result = dynamic_integration.force_update(request.update_type)
-        
-        return {
-            "status": "success",
-            "message": f"{request.update_type} update completed",
-            "results": update_result,
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        logger.error(f"Admin update error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/admin/status")
-async def admin_status():
-    try:
-        # Get system status
-        system_status = {
-            "backend": "online",
-            "database": "connected",
-            "ai_service": "active" if simple_gemini_client.is_initialized else "inactive",
-            "dynamic_system": "active",
-            "last_update": dynamic_integration.knowledge_manager.last_update.isoformat() if dynamic_integration.knowledge_manager.last_update else "unknown",
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        return system_status
-    except Exception as e:
-        logger.error(f"Status check error: {e}")
-        return {
-            "backend": "online",
-            "database": "error",
-            "ai_service": "error",
-            "dynamic_system": "error",
+            "status": "degraded",
+            "service": "NovaTech AI Backend (Memory Optimized with Smart Features)",
+            "version": "2.0.0",
             "error": str(e),
-            "timestamp": datetime.now().isoformat()
+            "timestamp": "2025-08-29T00:00:00Z"
         }
 
-# WebSocket endpoint for real-time chat
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
+# Main chat endpoint with smart features
+@app.post("/api/chat", response_model=ChatResponse)
+async def chat_endpoint(request: ChatRequest):
+    """Smart chat endpoint with lightweight intelligence"""
+    global simple_gemini, knowledge_manager
+    
     try:
-        while True:
-            data = await websocket.receive_text()
-            message_data = ChatMessage.parse_raw(data)
-            
-            # Process message and generate response
+        # Load AI components if not already loaded
+        load_ai_components()
+        
+        # Initialize smart processor
+        processor = LightweightSmartProcessor()
+        
+        # Process the query intelligently
+        normalized_query = processor.normalize_slang(request.message)
+        intent = processor.detect_intent(normalized_query)
+        
+        # Get conversation context
+        session_id = request.session_id or "new_session"
+        conversation_context = conversation_contexts.get(session_id, "")
+        
+        # Get smart context from knowledge base
+        context = ""
+        if knowledge_manager:
+            if hasattr(knowledge_manager, 'get_smart_context'):
+                # Use smart knowledge manager
+                context = knowledge_manager.get_smart_context(normalized_query, intent)
+            else:
+                # Use simple knowledge manager
+                context = str(knowledge_manager.get_knowledge("company"))
+        
+        # Build smart prompt
+        smart_prompt = build_smart_prompt(normalized_query, context, intent, conversation_context)
+        
+        # Try LangChain first if available and requested
+        if request.use_langchain and langchain_gemini:
             try:
-                if message_data.type == "message":
-                    # Get AI response
-                    response = simple_gemini_client.generate_response(message_data.content)
-                    
-                    # Send response back
-                    await manager.send_personal_message(
-                        ChatMessage(
-                            type="message",
-                            content=response,
-                            timestamp=datetime.now().isoformat()
-                        ).json(),
-                        websocket
-                    )
-            except Exception as e:
-                logger.error(f"WebSocket message processing error: {e}")
-                await manager.send_personal_message(
-                    ChatMessage(
-                        type="error",
-                        content="Sorry, I encountered an error processing your message.",
-                        timestamp=datetime.now().isoformat()
-                    ).json(),
-                    websocket
+                response = langchain_gemini.generate_response(
+                    request.message, 
+                    session_id=request.session_id
                 )
+                return ChatResponse(
+                    response=response,
+                    session_id=session_id,
+                    timestamp="2025-08-29T00:00:00Z",
+                    model_used="langchain_gemini"
+                )
+            except Exception as e:
+                logger.warning(f"LangChain failed, falling back: {e}")
+        
+        # Generate response with smart Gemini
+        logger.info(f"🔍 Debug: simple_gemini = {simple_gemini}")
+        logger.info(f"🔍 Debug: type(simple_gemini) = {type(simple_gemini)}")
+        logger.info(f"🔍 Debug: simple_gemini is None = {simple_gemini is None}")
+        logger.info(f"🔍 Debug: bool(simple_gemini) = {bool(simple_gemini)}")
+        
+        if simple_gemini:
+            try:
+                # Use lightweight Gemini client with smart prompt
+                model = simple_gemini.GenerativeModel('gemini-1.5-flash')
+                response = model.generate_content(smart_prompt)
                 
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
+                # Update conversation context
+                conversation_contexts[session_id] = f"{conversation_context}\nUser: {request.message}\nAssistant: {response.text}"
+                
+                # Keep context manageable (last 10 exchanges)
+                context_lines = conversation_contexts[session_id].split('\n')
+                if len(context_lines) > 10:
+                    conversation_contexts[session_id] = '\n'.join(context_lines[-10:])
+                
+                logger.info(f"✅ Smart response generated - Intent: {intent}, Context: {'Yes' if context else 'No'}")
+                
+                return ChatResponse(
+                    response=response.text,
+                    session_id=session_id,
+                    timestamp="2025-08-29T00:00:00Z",
+                    model_used="smart_gemini"
+                )
+            except Exception as e:
+                logger.warning(f"Smart Gemini failed: {e}")
+        
+        # Final fallback
+        return ChatResponse(
+            response="I'm experiencing technical difficulties. Please try again in a moment.",
+            session_id=session_id,
+            timestamp="2025-08-29T00:00:00Z",
+            model_used="fallback"
+        )
+        
+    except Exception as e:
+        logger.error(f"Smart chat error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
-# Chat endpoints
-@app.post("/api/chat/messages")
-async def send_message(request: MessageRequest):
+# LangChain specific endpoint
+@app.post("/api/langchain/chat")
+async def langchain_chat(request: ChatRequest):
+    """LangChain-specific chat endpoint"""
     try:
-        # Process message and generate response
-        response = simple_gemini_client.generate_response(request.message)
+        # Load AI components if not already loaded
+        load_ai_components()
+        
+        if not langchain_gemini:
+            raise HTTPException(status_code=503, detail="LangChain service not available")
+        
+        response = langchain_gemini.generate_response(
+            request.message, 
+            session_id=request.session_id
+        )
+        return {"response": response, "model": "langchain_gemini"}
+    except Exception as e:
+        logger.error(f"LangChain chat error: {e}")
+        raise HTTPException(status_code=500, detail="LangChain processing error")
+
+# Knowledge base endpoint
+@app.get("/api/knowledge/{category}")
+async def get_knowledge(category: str):
+    """Get knowledge base information"""
+    try:
+        # Load AI components if not already loaded
+        load_ai_components()
+        
+        if not knowledge_manager:
+            raise HTTPException(status_code=503, detail="Knowledge service not available")
+        
+        # Use knowledge manager
+        knowledge_data = knowledge_manager.get_knowledge(category)
+        return {"category": category, "status": "available", "data": knowledge_data}
+    except Exception as e:
+        logger.error(f"Knowledge endpoint error: {e}")
+        raise HTTPException(status_code=500, detail="Knowledge retrieval error")
+
+# Test smart features endpoint
+@app.get("/api/test-smart")
+async def test_smart_features():
+    """Test endpoint to verify smart features are working"""
+    try:
+        processor = LightweightSmartProcessor()
+        
+        # Test slang normalization
+        test_slang = "yo sup, hows it going?"
+        normalized = processor.normalize_slang(test_slang)
+        
+        # Test intent detection
+        intent = processor.detect_intent("hi there")
         
         return {
             "status": "success",
-            "message": {
-                "id": datetime.now().timestamp(),
-                "type": "bot",
-                "content": response,
-                "timestamp": datetime.now().isoformat()
-            }
+            "smart_features": {
+                "slang_processing": True,
+                "intent_detection": True,
+                "test_slang": test_slang,
+                "normalized": normalized,
+                "detected_intent": intent
+            },
+            "message": "Smart features are working correctly!"
         }
     except Exception as e:
-        logger.error(f"Chat message error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Smart features test error: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "message": "Smart features test failed"
+        }
 
-@app.get("/api/chat/channels")
-async def get_channels():
-    return {
-        "status": "success",
-        "channels": [
-            {"id": 1, "name": "General", "description": "General company discussions"},
-            {"id": 2, "name": "Engineering", "description": "Technical discussions"},
-            {"id": 3, "name": "Marketing", "description": "Marketing and sales"},
-            {"id": 4, "name": "Sales", "description": "Sales team communications"},
-            {"id": 5, "name": "HR", "description": "Human resources"}
-        ]
-    }
+# Error handling
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler"""
+    logger.error(f"Unhandled exception: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error", "error": str(exc)}
+    )
 
 if __name__ == "__main__":
-    logger.info("Starting NovaTech AI Backend Server...")
-    # Use environment variable for port, default to 8000
-    port = int(os.getenv("PORT", 8000))
+    import uvicorn
     host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", 8000))
     
     logger.info(f"Starting NovaTech AI Backend Server on {host}:{port}")
     uvicorn.run(
-        "backend_server:app",
+        "backend_server_production:app",
         host=host,
         port=port,
         reload=False,

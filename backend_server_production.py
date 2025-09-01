@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-NovaTech AI Backend Server - Memory Optimized Version with Smart Features
-Maintains ALL AI capabilities while optimizing for Render's 512MB limit
-"""
 
 import os
 import logging
@@ -633,3 +629,4 @@ if __name__ == "__main__":
         reload=False,
         log_level="info"
     ) 
+

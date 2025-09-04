@@ -400,15 +400,15 @@ class WorldClassSmartProcessor:
         # Enhanced intent patterns with confidence scoring
         self.intent_keywords = {
             "greeting": {
-                "keywords": ["hi", "hello", "hey", "sup", "yo", "howdy", "good morning", "good afternoon", "good evening"],
+                "keywords": ["hello", "hey", "howdy", "good morning", "good afternoon", "good evening"],
                 "confidence": 0.9
             },
             "company": {
-                "keywords": ["company", "business", "nova", "novatech", "firm", "organization", "about", "tell me about"],
+                "keywords": ["company", "business", "nova", "novatech", "firm", "organization", "about", "tell me about", "what do you do", "what does"],
                 "confidence": 0.8
             },
             "product": {
-                "keywords": ["product", "service", "crm", "hr", "helpdesk", "analytics", "pricing", "cost", "features", "solution"],
+                "keywords": ["product", "service", "crm", "hr", "helpdesk", "analytics", "pricing", "cost", "features", "solution", "what can you", "services", "offer"],
                 "confidence": 0.8
             },
             "leadership": {
@@ -438,15 +438,27 @@ class WorldClassSmartProcessor:
         }
     
     def normalize_slang(self, text: str) -> str:
-        """Enhanced slang normalization with context awareness"""
+        """Enhanced slang normalization with word boundary awareness"""
+        import re
         text_lower = text.lower()
-        for slang, formal in self.slang_dict.items():
-            text_lower = text_lower.replace(slang, formal)
+        
+        # Sort by length (longest first) to avoid substring conflicts
+        sorted_slang = sorted(self.slang_dict.items(), key=lambda x: len(x[0]), reverse=True)
+        
+        for slang, formal in sorted_slang:
+            # Use word boundaries for standalone words to avoid substring replacements
+            if len(slang) <= 3:  # Short words like "yo", "ty", etc.
+                pattern = r'\b' + re.escape(slang) + r'\b'
+                text_lower = re.sub(pattern, formal, text_lower)
+            else:  # Longer phrases can use simple replacement
+                text_lower = text_lower.replace(slang, formal)
+                
         return text_lower
     
     def detect_intent_with_confidence(self, text: str) -> Tuple[str, float]:
-        """Enhanced intent detection with confidence scoring"""
-        text_lower = text.lower()
+        """Enhanced intent detection with confidence scoring and context awareness"""
+        import re
+        text_lower = text.lower().strip()
         
         # Check for creator questions first
         creator_phrases = [
@@ -458,6 +470,11 @@ class WorldClassSmartProcessor:
         if any(phrase in text_lower for phrase in creator_phrases):
             return "creator", 0.9
         
+        # Check for simple standalone greetings
+        simple_greetings = ["hi", "sup", "yo"]
+        if text_lower.strip() in simple_greetings:
+            return "greeting", 0.95
+        
         best_intent = "general"
         best_confidence = 0.0
         
@@ -465,11 +482,34 @@ class WorldClassSmartProcessor:
             keywords = data["keywords"]
             base_confidence = data["confidence"]
             
-            # Count keyword matches
-            matches = sum(1 for keyword in keywords if keyword in text_lower)
+            # Use word boundary matching for better accuracy
+            matches = 0
+            for keyword in keywords:
+                # For short keywords, use word boundaries
+                if len(keyword) <= 4:
+                    pattern = r'\b' + re.escape(keyword) + r'\b'
+                    if re.search(pattern, text_lower):
+                        matches += 1
+                else:
+                    # For longer phrases, use contains
+                    if keyword in text_lower:
+                        matches += 1
+            
             if matches > 0:
-                # Calculate confidence based on matches and base confidence
-                confidence = min(0.95, base_confidence + (matches * 0.1))
+                # Calculate confidence based on matches and text length context
+                confidence = base_confidence + (matches * 0.1)
+                
+                # Boost confidence for exact matches at sentence start
+                words = text_lower.split()
+                if len(words) > 0 and any(words[0] == kw for kw in keywords):
+                    confidence += 0.1
+                
+                # Reduce confidence for very long sentences with weak matches
+                if len(words) > 5 and matches == 1:
+                    confidence -= 0.2
+                
+                confidence = min(0.95, max(0.1, confidence))
+                
                 if confidence > best_confidence:
                     best_confidence = confidence
                     best_intent = intent

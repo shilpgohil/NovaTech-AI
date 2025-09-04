@@ -15,7 +15,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple
 import json
 import gc
 from datetime import datetime
@@ -162,7 +162,7 @@ class LightweightAILearning:
         }
         self.max_learning_entries = 50  # Keep memory usage low
         
-    def learn_from_interaction(self, query: str, intent: str, response: str, satisfaction: int = None):
+    def learn_from_interaction(self, query: str, intent: str, response: str, satisfaction: Optional[int] = None):
         """Learn from user interactions"""
         # Track intent accuracy
         if intent not in self.learning_data["intent_accuracy"]:
@@ -234,13 +234,13 @@ class LightweightPredictiveAnalytics:
     def __init__(self):
         self.historical_data = {
             "response_times": [],
-            "intent_distribution": {},
+            "intent_distribution": [],
             "user_satisfaction": [],
             "query_patterns": []
         }
         self.max_historical_entries = 100  # Keep memory usage low
     
-    def add_data_point(self, data_type: str, value: Any, metadata: dict = None):
+    def add_data_point(self, data_type: str, value: Any, metadata: Optional[Dict[str, Any]] = None):
         """Add data point for analysis"""
         if data_type in self.historical_data:
             self.historical_data[data_type].append({
@@ -274,7 +274,8 @@ class LightweightPredictiveAnalytics:
         
         # Predict intent distribution
         if self.historical_data["intent_distribution"]:
-            intent_counts = Counter(self.historical_data["intent_distribution"])
+            intent_values = [d["value"] for d in self.historical_data["intent_distribution"]]
+            intent_counts = Counter(intent_values)
             most_common = intent_counts.most_common(3)
             predictions["top_intents"] = [{"intent": intent, "count": count} for intent, count in most_common]
         
@@ -443,7 +444,7 @@ class WorldClassSmartProcessor:
             text_lower = text_lower.replace(slang, formal)
         return text_lower
     
-    def detect_intent_with_confidence(self, text: str) -> tuple[str, float]:
+    def detect_intent_with_confidence(self, text: str) -> Tuple[str, float]:
         """Enhanced intent detection with confidence scoring"""
         text_lower = text.lower()
         
@@ -889,13 +890,19 @@ async def world_class_chat_endpoint(request: ChatRequest):
                     new_context = '\n'.join(context_lines[-12:])
                 conversation_contexts[session_id] = new_context
                 
-                # Track performance and learning
-                perf_stats = performance_optimizer.track_response_time(start_time)
-                ai_learning.learn_from_interaction(normalized_query, intent, template_response)
-                predictive_analytics.add_data_point("intent_distribution", intent)
-                predictive_analytics.add_data_point("response_times", perf_stats["response_time"])
+                # Track performance and learning (safe)
+                try:
+                    perf_stats = performance_optimizer.track_response_time(start_time)
+                    ai_learning.learn_from_interaction(normalized_query, intent, template_response)
+                    predictive_analytics.add_data_point("intent_distribution", intent)
+                    predictive_analytics.add_data_point("response_times", perf_stats["response_time"])
+                except Exception as tracking_error:
+                    logger.warning(f"Tracking error (non-critical): {tracking_error}")
                 
-                logger.info(f"✅ Professional template response - Intent: {intent}, Time: {perf_stats['response_time']}s")
+                try:
+                    logger.info(f"✅ Professional template response - Intent: {intent}, Time: {perf_stats['response_time']}s")
+                except:
+                    logger.info(f"✅ Professional template response - Intent: {intent}")
                 
                 return ChatResponse(
                     response=template_response,
@@ -938,11 +945,15 @@ async def world_class_chat_endpoint(request: ChatRequest):
                     new_context = '\n'.join(context_lines[-12:])
                 conversation_contexts[session_id] = new_context
                 
-                # Track performance and learning
-                perf_stats = performance_optimizer.track_response_time(start_time)
-                ai_learning.learn_from_interaction(normalized_query, intent, response.text)
-                predictive_analytics.add_data_point("intent_distribution", intent)
-                predictive_analytics.add_data_point("response_times", perf_stats["response_time"])
+                # Track performance and learning (safe)
+                try:
+                    perf_stats = performance_optimizer.track_response_time(start_time)
+                    ai_learning.learn_from_interaction(normalized_query, intent, response.text)
+                    predictive_analytics.add_data_point("intent_distribution", intent)
+                    predictive_analytics.add_data_point("response_times", perf_stats["response_time"])
+                except Exception as tracking_error:
+                    logger.warning(f"Tracking error (non-critical): {tracking_error}")
+                    perf_stats = {"response_time": time.time() - start_time}
                 
                 logger.info(f"✅ World-class response - Intent: {intent}, Confidence: {confidence:.2f}, Time: {perf_stats['response_time']}s")
                 
@@ -974,10 +985,16 @@ async def world_class_chat_endpoint(request: ChatRequest):
         
     except Exception as e:
         logger.error(f"Critical chat error: {e}")
-        perf_stats = performance_optimizer.track_response_time(start_time)
+        logger.error(f"Error details: {str(e)}")
+        logger.error(f"Error type: {type(e).__name__}")
+        
+        try:
+            perf_stats = performance_optimizer.track_response_time(start_time)
+        except:
+            pass
         
         return ChatResponse(
-            response="I'm experiencing technical difficulties. Please try again in a moment.",
+            response=f"I'm experiencing technical difficulties: {str(e)[:100]}. Please try again in a moment.",
             session_id=session_id,
             timestamp=datetime.now().isoformat(),
             model_used="error_fallback"

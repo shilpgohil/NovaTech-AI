@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3/
 """
 NovaTech AI Backend Server - World-Class Lightweight Version
 All features optimized for Render's 500MB limit
@@ -1247,3 +1247,4 @@ if __name__ == "__main__":
         reload=False,
         log_level="info"
     ) 
+

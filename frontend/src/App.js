@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Analytics } from '@vercel/analytics/react';
 import LandingPage from './components/LandingPage';
 import ChatbotInterfaceNew from './components/ChatbotInterfaceNew';
 import PureDissolveTransition from './components/PureDissolveTransition';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
 import './App.css';
 
 function App() {
   const [currentView, setCurrentView] = useState('landing');
   const [isLoading, setIsLoading] = useState(true);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     // Simulate initial loading
@@ -66,6 +69,7 @@ function App() {
 
   return (
     <div className="App">
+      <Analytics />
       <AnimatePresence mode="wait" initial={false} onExitComplete={() => {}}>
         {currentView === 'landing' ? (
           <PureDissolveTransition
@@ -85,6 +89,21 @@ function App() {
           </PureDissolveTransition>
         )}
       </AnimatePresence>
+      
+      {/* Analytics Dashboard */}
+      <AnalyticsDashboard 
+        isVisible={showAnalytics} 
+        onClose={() => setShowAnalytics(false)} 
+      />
+      
+      {/* Analytics Toggle Button */}
+      <button
+        onClick={() => setShowAnalytics(true)}
+        className="fixed bottom-4 right-4 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors z-40"
+        title="View Analytics"
+      >
+        📊
+      </button>
     </div>
   );
 }

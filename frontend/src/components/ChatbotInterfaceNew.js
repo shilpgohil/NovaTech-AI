@@ -22,6 +22,10 @@ const ChatbotInterfaceNew = ({ onBackToLanding, isVisible = true }) => {
   const [systemStatus, setSystemStatus] = useState({});
   const [soundEnabled, setSoundEnabled] = useState(true);
   
+  // User identification state
+  const [userName, setUserName] = useState('');
+  const [showNameInput, setShowNameInput] = useState(true);
+  
   // Refs
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -32,6 +36,34 @@ const ChatbotInterfaceNew = ({ onBackToLanding, isVisible = true }) => {
   
   // Constants
   const API_BASE_URL = 'https://novatech-ai-3qii.onrender.com'; // Force correct backend URL
+  
+  // User identification functions
+  const handleNameSubmit = async () => {
+    const name = userName.trim() || 'Anonymous';
+    setUserName(name);
+    setShowNameInput(false);
+    
+    // Send user info to backend for tracking
+    try {
+      await axios.post(`${API_BASE_URL}/api/user/identify`, {
+        user_name: name,
+        session_id: sessionId
+      });
+      
+      // Update welcome message with user's name
+      setMessages(prev => [{
+        id: 1,
+        type: 'bot',
+        content: `Hello ${name}! I'm NovaTech AI, your intelligent business assistant. I can help you with company information, market data, industry trends, and much more. What would you like to know?`,
+        timestamp: new Date(),
+      }]);
+      
+      toast.success(`Welcome, ${name}!`);
+    } catch (error) {
+      console.log('User identification failed:', error);
+      toast.error('Failed to identify user, but you can still chat!');
+    }
+  };
   
   // Simple sound effects
   const playSound = useCallback((type) => {
@@ -224,6 +256,62 @@ const ChatbotInterfaceNew = ({ onBackToLanding, isVisible = true }) => {
     </motion.div>
   );
   
+  // Show name input screen if user hasn't entered their name
+  if (showNameInput) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full text-center border border-white/20"
+        >
+          <div className="mb-6">
+            <div className="text-6xl mb-4">🚀</div>
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Welcome to NovaTech AI!
+            </h2>
+            <p className="text-gray-300 text-lg">
+              What should we call you?
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Enter your name (optional)"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleNameSubmit()}
+              className="w-full p-4 rounded-lg bg-white/20 text-white placeholder-gray-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              autoFocus
+            />
+            
+            <button
+              onClick={handleNameSubmit}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 active:scale-95"
+            >
+              Start Chatting
+            </button>
+            
+            <button
+              onClick={() => {
+                setUserName('Anonymous');
+                setShowNameInput(false);
+              }}
+              className="w-full text-gray-400 hover:text-white transition-colors text-sm"
+            >
+              Continue as Anonymous
+            </button>
+          </div>
+          
+          <p className="text-xs text-gray-400 mt-6">
+            Your name helps us personalize your experience and track usage analytics
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Animated Background */}

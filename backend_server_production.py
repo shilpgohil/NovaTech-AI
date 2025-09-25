@@ -1,10 +1,5 @@
-#!/usr/bin/env python3/
-"""
-NovaTech AI Backend Server - World-Class Lightweight Version
-All features optimized for Render's 500MB limit
-"""
-
 import os
+import sys
 import logging
 import time
 import asyncio
@@ -21,6 +16,10 @@ import gc
 from datetime import datetime
 from collections import Counter
 
+# Add analytics logging
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src', 'logging'))
+from analytics_logger import analytics_logger
+
 # Configure logging for production
 logging.basicConfig(
     level=logging.INFO,
@@ -34,12 +33,7 @@ knowledge_manager = None
 dynamic_apis = None
 user_learning = None
 
-# Simple conversation context manager (lightweight)
 conversation_contexts = {}
-
-# ============================================================================
-# WORLD-CLASS LIGHTWEIGHT COMPONENTS
-# ============================================================================
 
 class LightweightPerformanceOptimizer:
     """Ultra-lightweight performance optimization for Render"""
@@ -899,13 +893,30 @@ async def health_check():
         }
 
 @app.post("/api/chat", response_model=ChatResponse)
-async def world_class_chat_endpoint(request: ChatRequest):
+async def world_class_chat_endpoint(request: ChatRequest, http_request: Request):
     """World-class chat endpoint with advanced features"""
     global simple_gemini, knowledge_manager
     
     # Start performance monitoring
     session_id = request.session_id or f"session_{int(time.time())}"
     start_time = time.time()
+    
+    # Get client information for analytics
+    client_ip = http_request.client.host if http_request.client else "unknown"
+    user_agent = http_request.headers.get("user-agent", "unknown")
+    
+    # Log user activity with enhanced details
+    analytics_logger.log_user_activity(
+        user_id=session_id,
+        activity="chat_query",
+        details={
+            "query_length": len(request.message),
+            "has_session_id": bool(request.session_id),
+            "query_preview": request.message[:50] + "..." if len(request.message) > 50 else request.message
+        },
+        ip_address=client_ip,
+        user_agent=user_agent
+    )
     
     try:
         # Load AI components if needed
@@ -943,6 +954,11 @@ async def world_class_chat_endpoint(request: ChatRequest):
                     logger.info(f"✅ Professional template response - Intent: {intent}, Time: {perf_stats['response_time']}s")
                 except:
                     logger.info(f"✅ Professional template response - Intent: {intent}")
+                
+                # Log successful response
+                response_time = time.time() - start_time
+                analytics_logger.log_system_performance("response_time", response_time * 1000, "ms")
+                analytics_logger.log_business_metric("template_response_used", intent, "response_type")
                 
                 return ChatResponse(
                     response=template_response,
@@ -997,6 +1013,12 @@ async def world_class_chat_endpoint(request: ChatRequest):
                 
                 logger.info(f"✅ World-class response - Intent: {intent}, Confidence: {confidence:.2f}, Time: {perf_stats['response_time']}s")
                 
+                # Log successful AI response
+                response_time = time.time() - start_time
+                analytics_logger.log_system_performance("response_time", response_time * 1000, "ms")
+                analytics_logger.log_business_metric("ai_response_used", intent, "response_type")
+                analytics_logger.log_business_metric("confidence_score", confidence, "ai_quality")
+                
                 return ChatResponse(
                     response=response.text,
                     session_id=session_id,
@@ -1016,6 +1038,11 @@ async def world_class_chat_endpoint(request: ChatRequest):
             perf_stats = performance_optimizer.track_response_time(start_time)
             fallback_response = "I'm currently unavailable. Please try again in a moment."
         
+        # Log fallback response
+        response_time = time.time() - start_time
+        analytics_logger.log_system_performance("response_time", response_time * 1000, "ms")
+        analytics_logger.log_business_metric("fallback_response_used", "timeout_or_error", "response_type")
+        
         return ChatResponse(
             response=fallback_response,
             session_id=session_id,
@@ -1028,10 +1055,22 @@ async def world_class_chat_endpoint(request: ChatRequest):
         logger.error(f"Error details: {str(e)}")
         logger.error(f"Error type: {type(e).__name__}")
         
+        # Log error
+        analytics_logger.log_error(
+            error_type=type(e).__name__,
+            error_message=str(e)[:200],
+            context={"session_id": session_id, "query_length": len(request.message)}
+        )
+        
         try:
             perf_stats = performance_optimizer.track_response_time(start_time)
         except:
             pass
+        
+        # Log error response
+        response_time = time.time() - start_time
+        analytics_logger.log_system_performance("response_time", response_time * 1000, "ms")
+        analytics_logger.log_business_metric("error_response_used", "critical_error", "response_type")
         
         return ChatResponse(
             response=f"I'm experiencing technical difficulties: {str(e)[:100]}. Please try again in a moment.",
@@ -1208,6 +1247,47 @@ async def admin_status():
         logger.error(f"Admin status error: {e}")
         return {"status": "error", "error": str(e)}
 
+@app.get("/api/analytics/summary")
+async def get_analytics_summary():
+    """Get analytics summary"""
+    try:
+        summary = analytics_logger.get_analytics_summary()
+        return {
+            "status": "success",
+            "analytics": summary
+        }
+    except Exception as e:
+        logger.error(f"Analytics summary error: {e}")
+        return {"status": "error", "error": str(e)}
+
+@app.get("/api/analytics/recent")
+async def get_recent_analytics(limit: int = 50):
+    """Get recent analytics logs"""
+    try:
+        recent_logs = analytics_logger.get_recent_logs(limit)
+        return {
+            "status": "success",
+            "logs": recent_logs,
+            "count": len(recent_logs)
+        }
+    except Exception as e:
+        logger.error(f"Recent analytics error: {e}")
+        return {"status": "error", "error": str(e)}
+
+@app.get("/api/analytics/export")
+async def export_analytics():
+    """Export all analytics data as JSON"""
+    try:
+        logs_json = analytics_logger.export_logs()
+        return {
+            "status": "success",
+            "data": logs_json,
+            "count": len(analytics_logger.logs)
+        }
+    except Exception as e:
+        logger.error(f"Analytics export error: {e}")
+        return {"status": "error", "error": str(e)}
+
 @app.post("/api/admin/update")
 async def admin_update():
     """Admin update endpoint"""
@@ -1215,6 +1295,28 @@ async def admin_update():
         return {"status": "success", "message": "System is up to date"}
     except Exception as e:
         logger.error(f"Admin update error: {e}")
+        return {"status": "error", "error": str(e)}
+
+@app.post("/api/user/identify")
+async def identify_user(request: dict):
+    """Identify user with name for better analytics"""
+    try:
+        user_name = request.get("user_name", "Anonymous")
+        session_id = request.get("session_id", f"session_{int(time.time())}")
+        
+        # Log user identification
+        analytics_logger.log_user_activity(
+            user_id=session_id,
+            activity="user_identified",
+            details={
+                "user_name": user_name,
+                "identification_time": datetime.now().isoformat()
+            }
+        )
+        
+        return {"status": "success", "message": f"User {user_name} identified"}
+    except Exception as e:
+        logger.error(f"User identification error: {e}")
         return {"status": "error", "error": str(e)}
 
 # ============================================================================

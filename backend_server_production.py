@@ -1,3 +1,9 @@
+#!/usr/bin/env python3/
+"""
+NovaTech AI Backend Server - World-Class Lightweight Version
+All features optimized for Render's 500MB limit
+"""
+
 import os
 import sys
 import logging
@@ -17,8 +23,26 @@ from datetime import datetime
 from collections import Counter
 
 # Add analytics logging
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src', 'logging'))
-from analytics_logger import analytics_logger
+try:
+    # Try direct import first (for Render deployment)
+    from src.logging.analytics_logger import analytics_logger
+except ImportError:
+    try:
+        # Fallback to relative import
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src', 'logging'))
+        from analytics_logger import analytics_logger
+    except ImportError:
+        # Create a dummy logger if all imports fail
+        class DummyLogger:
+            def log_user_activity(self, *args, **kwargs): pass
+            def log_system_performance(self, *args, **kwargs): pass
+            def log_business_metric(self, *args, **kwargs): pass
+            def log_error(self, *args, **kwargs): pass
+            def get_analytics_summary(self): return {"total_logs": 0, "unique_users": 0, "user_activities": 0, "average_response_time_ms": 0, "errors": 0, "last_updated": datetime.now().isoformat()}
+            def get_recent_logs(self, limit=50): return []
+            def export_all_data(self): return {"logs": [], "summary": self.get_analytics_summary()}
+        analytics_logger = DummyLogger()
+        print("Warning: Analytics logger not available, using dummy logger")
 
 # Configure logging for production
 logging.basicConfig(
@@ -33,7 +57,12 @@ knowledge_manager = None
 dynamic_apis = None
 user_learning = None
 
+# Simple conversation context manager (lightweight)
 conversation_contexts = {}
+
+# ============================================================================
+# WORLD-CLASS LIGHTWEIGHT COMPONENTS
+# ============================================================================
 
 class LightweightPerformanceOptimizer:
     """Ultra-lightweight performance optimization for Render"""
